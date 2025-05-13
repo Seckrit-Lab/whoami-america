@@ -18,8 +18,6 @@ An OpenTADA session also requires player information. This can be given loosely 
 - Preferred writing style (e.g. as a list of favorite authors)
 - Desired interaction level (basically just read, or choreograph dancing and fight sequences?)
 
-Without getting into details like API specifications, please give a basic description of how the interactions of this system work -- at what point does the application provide what parts of the novel to which agents, when do they interact with each other, and what simple language do they use to do so? E.g. does the Director read each input from the player and send PLAYER MAD to Writer to suggest it's time to simplify things?
-
 # Prototype
 This is the example prompt that was used to prototype this process on Google Gemini to help make sure an old friend doesn't have a schism with his visual novelist daughter over AI (though actually I think they're OK). Try pasting it into Google Gemini or the LLM of your choice and tweaking the "the player is" statement to match yourself!
 
