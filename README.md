@@ -73,11 +73,13 @@ COMMAND: END_GAME(reason_code)
 Conductor -> Director / Writer:
 INIT: SEQUENCE(relevant_data_subset) (Initial data push)
 UPDATE: CONTEXT(new_information) (If Gxd provides mid-sequence updates)
+```
 Diagrams (Mermaid Format):
 
 1. Component and Information Flow Diagram:
 
 Code snippet
+```mermaid
 graph TD
     subgraph OpenTADA System
         Gxd(Gxd Agent<br/>Overseer<br/>Holds ALL Novel Data)
