@@ -56,24 +56,23 @@ Conflict/Failure:
 If the Conductor encounters an unmanageable situation (e.g., contradictory state, agents deadlocked, player input leads to an unrecoverable state not covered by the script), it signals Gxd (REPORT_FAILURE).
 Gxd assesses the situation using its global knowledge. It might issue overriding commands (RESOLVE_CONFLICT) or trigger the predefined game-ending scenario (END_GAME).
 Simple Communication Language (Examples):
-```mermaid
-Director -> Writer:
-SIGNAL: HINT (Player seems stuck)
-SIGNAL: EXCITEMENT (Player seems bored)
-SIGNAL: SIMPLIFY (Player seems frustrated or input suggests confusion)
-SIGNAL: CLARIFY_ACTION (Player input is ambiguous regarding available actions)
-SIGNAL: NORMAL (Default state, no specific adjustment needed)
-Conductor -> Gxd:
-REQUEST: SEQUENCE(sequence_id_or_trigger)
-REPORT: FAILURE(details_of_issue)
-Gxd -> Conductor:
-PROVIDE: SEQUENCE(data_package)
-RESOLVE: CONFLICT(instructions_or_state_override)
-COMMAND: END_GAME(reason_code)
-Conductor -> Director / Writer:
-INIT: SEQUENCE(relevant_data_subset) (Initial data push)
-UPDATE: CONTEXT(new_information) (If Gxd provides mid-sequence updates)
-```
+    Director -> Writer:
+    SIGNAL: HINT (Player seems stuck)
+    SIGNAL: EXCITEMENT (Player seems bored)
+    SIGNAL: SIMPLIFY (Player seems frustrated or input suggests confusion)
+    SIGNAL: CLARIFY_ACTION (Player input is ambiguous regarding available actions)
+    SIGNAL: NORMAL (Default state, no specific adjustment needed)
+    Conductor -> Gxd:
+    REQUEST: SEQUENCE(sequence_id_or_trigger)
+    REPORT: FAILURE(details_of_issue)
+    Gxd -> Conductor:
+    PROVIDE: SEQUENCE(data_package)
+    RESOLVE: CONFLICT(instructions_or_state_override)
+    COMMAND: END_GAME(reason_code)
+    Conductor -> Director / Writer:
+    INIT: SEQUENCE(relevant_data_subset) (Initial data push)
+    UPDATE: CONTEXT(new_information) (If Gxd provides mid-sequence updates)
+
 Diagrams (Mermaid Format):
 
 1. Component and Information Flow Diagram:
