@@ -6,7 +6,7 @@
 - tada.fsproj: .NET project file
 
 ## Project Format
-- Type: Cross-Platform .Net Application primarily in F# with windowed UI
+- Type: Cross-Platform .Net Application primarily in F# with windowed UI, compiled on MacOS using Visual Studio Code
 - Structure: Command-line interactive fiction engine
 - Dependencies: None initially (will add AI integration later)
 
