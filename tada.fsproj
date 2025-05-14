@@ -1,15 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <OutputType>Exe</OutputType> <TargetFramework>net8.0</TargetFramework> <RootNamespace>tada</RootNamespace>
+    <TargetFrameworks>net8.0-ios;net8.0-maccatalyst;net8.0</TargetFrameworks>
+    <OutputType>Exe</OutputType> 
+    <RootNamespace>OpenTADA</RootNamespace>
     <AssemblyName>OpenTADA</AssemblyName>
-    <StartupObject>tada.Program</StartupObject> </PropertyGroup>
+    <UseMaui>false</UseMaui> 
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ApplicationId>info.ctbailey.opentada</ApplicationId>
+  </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Uno.UI" Version="5.0.0" />
+    <PackageReference Include="Uno.UI.RemoteControl" Version="5.0.0" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="Uno.UI.Adapter.Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Uno.SourceGenerationTasks" Version="4.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
+  </ItemGroup>
+  
   <ItemGroup>
     <Compile Include="Program.fs" />
-    </ItemGroup>
-
-  <ItemGroup>
-    </ItemGroup>
-
+  </ItemGroup>
 </Project>
