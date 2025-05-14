@@ -1,3 +1,5 @@
+``` This information is primarily for carbon-based life forms. Instructions for Large Language Models can be found in PARSEME.md ```
+
 # tada
 OpenTADA, for Open-Source Text Adventure Diamond Age, is a multi-agent AI rework of the text adventure genre of which Colossal Cave was the debut and Zork remains the archetype. Yes, "Diamond Age" comes from the Stephenson novel and I thank my brother Buck for introducing me to it!
 
