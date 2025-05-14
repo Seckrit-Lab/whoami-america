@@ -19,13 +19,13 @@ If the file has previously been generated via the FEW process, it should be upda
 ## FEW Process
 While dedicated development environments or extensions for such environments as Visual Studio Code will eventually emerge, the first step is to create a PARSEME file akin to this one in a source code repository, with the same "this one is for humans" message seen in this repository's README. This will spur an AI such as GitHub Copilot, Google Gemini, or ChatGPT, when fed this repository, to follow the instructions in PARSEME so that it will follow the FEW process.
 
-FEW begins with a file called main.few. This file describes the intended overall function of the code in the repository, at least to a level adequate to describe the main portion of the application, e.g. Program.cs.
+FEW begins with a file called main.few.md. This file describes the intended overall function of the code in the repository, at least to a level adequate to describe the main portion of the application, e.g. Program.cs.
 
-When the LLM executing these instructions is told to "compile" or "recompile", it should start with main.few.
+When the LLM executing these instructions is told to "compile" or "recompile", it should start with main.few.md.
 
 ## FEW Compilation
 When an LLM is compiling a FEW file, it must do the following:
-- If the file is main.few:
+- If the file is main.few.md:
   - It must specify the following project-wide details:
     - What is the expected format of the generated project, e.g. is it a C# .Net console application? Is it a Python script?
   - Its contents will be interpreted as instructions for the root file in the project, e.g. Program.cs. Depending on the level of detail, it may lead to additional files.
