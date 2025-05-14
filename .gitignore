@@ -1,7 +1,9 @@
 bin/
 obj/
+build/
 .idea/
 macos/
+ios/
 .dart_tool/
 .packages
 pubspec.lock
