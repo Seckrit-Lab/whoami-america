@@ -1,48 +1,42 @@
-open System
-open System.Windows.Forms
-open System.Drawing
+namespace Tada
 
-type MainForm() as this =
-    inherit Form()
-    
-    // Main output text area
-    let outputText = new RichTextBox(
-        Dock = DockStyle.Fill,
-        ReadOnly = true,
-        Multiline = true
-    )
-    
-    // Image display area
-    let imageBox = new PictureBox(
-        Dock = DockStyle.Left,
-        SizeMode = PictureBoxSizeMode.Zoom,
-        Width = 200
-    )
-    
-    // Input text box
-    let inputText = new TextBox(
-        Dock = DockStyle.Bottom,
-        Height = 25
-    )
+open Avalonia
+open Avalonia.Controls
+open Avalonia.Controls.ApplicationLifetimes
+open Avalonia.Markup.Xaml
 
+type MainWindow() as this =
+    inherit Window()
+    
     do
-        this.Text <- "OpenTADA"
-        this.Size <- new Size(800, 600)
+        AvaloniaXamlLoader.Load(this)
+        let inputText = this.FindControl<TextBox>("InputText")
+        let outputText = this.FindControl<TextBox>("OutputText")
         
-        this.Controls.Add(outputText)
-        this.Controls.Add(imageBox) 
-        this.Controls.Add(inputText)
-
-        inputText.KeyPress.Add(fun e ->
-            if e.KeyChar = '\r' then
-                // TODO: Process input
-                outputText.AppendText(inputText.Text + "\n")
-                inputText.Clear()
+        inputText.KeyDown.Add(fun e ->
+            if e.Key = Input.Key.Enter then
+                outputText.Text <- outputText.Text + inputText.Text + "\n"
+                inputText.Text <- ""
         )
 
-[<EntryPoint>]
-let main argv =
-    Application.EnableVisualStyles()
-    Application.SetCompatibleTextRenderingDefault(false)
-    Application.Run(new MainForm())
-    0
+type App() =
+    inherit Application()
+    
+    override this.Initialize() =
+        //this.Styles.Add(Styling.Styles.FluentDark())
+        AvaloniaXamlLoader.Load(this)
+
+    override this.OnFrameworkInitializationCompleted() =
+        match this.ApplicationLifetime with
+        | :? IClassicDesktopStyleApplicationLifetime as desktop ->
+            desktop.MainWindow <- MainWindow()
+        | _ -> ()
+        base.OnFrameworkInitializationCompleted()
+
+module Program =
+    [<EntryPoint>]
+    let main argv =
+        AppBuilder
+            .Configure<App>()
+            .UsePlatformDetect()
+            .StartWithClassicDesktopLifetime(argv)
