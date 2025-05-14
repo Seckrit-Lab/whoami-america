@@ -1,19 +1,20 @@
-name: opentada_flutter
+name: tada
 description: An Interactive Fiction engine.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.2.0 <4.0.0' # Ensure compatibility with latest Flutter features
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
-  http: ^1.1.0 # For making HTTP requests to Gemini API
-  flutter_secure_storage: ^9.0.0 # For storing API key securely
-  # shared_preferences: ^2.2.2 # Alternative for local storage if secure_storage is not desired for some reason
+  google_generative_ai: ^0.4.0 # Use a recent version for Gemini API
+  file_picker: ^6.1.1 # For file selection
+  shared_preferences: ^2.2.2 # For local key-value storage
+  path_provider: ^2.1.1 # For accessing standard paths
+  # cupertino_icons: ^1.0.2 # Included by default, but good to be aware of
 
 dev_dependencies:
   flutter_test:
@@ -22,5 +23,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets:
-    - books/The Beloved Dead Chapter 0.tada

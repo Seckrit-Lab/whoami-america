@@ -1,251 +1,282 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart'; // For potential future file-based key storage
+
+const String geminiApiKeyName = 'geminikey';
 
 void main() {
-  runApp(const OpenTadaApp());
+  runApp(const OpenTADAApp());
 }
 
-class OpenTadaApp extends StatelessWidget {
-  const OpenTadaApp({super.key});
+class OpenTADAApp extends StatelessWidget {
+  const OpenTADAApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'OpenTADA',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.lightBlue, // You can choose any seed color
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
       ),
-      home: const ChatScreen(),
+      home: const StoryScreen(),
     );
   }
 }
 
-class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+class StoryScreen extends StatefulWidget {
+  const StoryScreen({super.key});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  State<StoryScreen> createState() => _StoryScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
-  final TextEditingController _textController = TextEditingController();
-  final List<Map<String, String>> _messages = [];
+class _StoryScreenState extends State<StoryScreen> {
+  final TextEditingController _inputController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  bool _isLoading = false;
+  final List<ChatMessage> _chatHistory = [];
+  GenerativeModel? _model;
+  ChatSession? _chat;
   String? _apiKey;
-  final _secureStorage = const FlutterSecureStorage();
-  static const String _geminiApiKeyName = "geminikey";
-  static const String _initialPromptPath = "books/The Beloved Dead Chapter 0.tada";
+  File? _currentImage;
 
-  String? _imageUrl;
+  static const double phoneScreenWidthThreshold = 600.0;
 
   @override
   void initState() {
     super.initState();
-    _loadApiKeyAndInitialPrompt();
+    _loadApiKeyAndInitialize();
   }
 
-  Future<void> _loadApiKeyAndInitialPrompt() async {
-    setState(() {
-      _isLoading = true;
-    });
-    _apiKey = await _secureStorage.read(key: _geminiApiKeyName);
-    if (_apiKey == null || _apiKey!.isEmpty) {
-      await _promptForApiKey();
+  @override
+  void dispose() {
+    _inputController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadApiKeyAndInitialize() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? apiKey = prefs.getString(geminiApiKeyName);
+
+    if (!mounted) return;
+
+    if (apiKey == null || apiKey.isEmpty) {
+      apiKey = await _promptForApiKey();
     }
-    if (_apiKey != null && _apiKey!.isNotEmpty) {
-      await _loadInitialPrompt();
+
+    if (apiKey != null && apiKey.isNotEmpty) {
+      setState(() {
+        _apiKey = apiKey;
+        _model = GenerativeModel(model: 'gemini-2.0-flash', apiKey: _apiKey!);
+        _chat = _model!.startChat();
+      });
+      if (mounted) { // Check mounted again before async file picking
+        await _pickAndProcessTadaFile();
+      }
     } else {
-      _addMessage("API Key not provided. Please restart and provide an API Key.", "system");
+      _addMessageToHistory('API Key not provided. Cannot start session.', false);
     }
-    setState(() {
-      _isLoading = false;
-    });
   }
 
-  Future<void> _promptForApiKey() async {
-    final TextEditingController apiKeyController = TextEditingController();
+  Future<String?> _promptForApiKey() async {
+    if (!mounted) return null;
+    String? key;
+    TextEditingController keyController = TextEditingController();
     await showDialog<String>(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('Enter Gemini API Key'),
           content: TextField(
-            controller: apiKeyController,
+            controller: keyController,
             decoration: const InputDecoration(hintText: "API Key"),
             obscureText: true,
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Save'),
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('OK'),
               onPressed: () async {
-                if (apiKeyController.text.isNotEmpty) {
-                  await _secureStorage.write(key: _geminiApiKeyName, value: apiKeyController.text);
-                  setState(() {
-                    _apiKey = apiKeyController.text;
-                  });
-                  Navigator.of(context).pop();
+                if (keyController.text.isNotEmpty) {
+                  key = keyController.text;
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setString(geminiApiKeyName, key!);
+                  Navigator.of(dialogContext).pop(key);
                 }
               },
             ),
           ],
         );
       },
+    ).then((value) => key = value); // Assign the result to key
+    return key;
+  }
+
+  Future<void> _pickAndProcessTadaFile() async {
+    if (_model == null) {
+      _addMessageToHistory("LLM not initialized. Please configure API key.", false);
+      return;
+    }
+
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['md'], // Allow .md, then filter for .tada.md
+    );
+
+    if (result != null && result.files.single.path != null) {
+      final fileName = result.files.single.name;
+      if (fileName == null || !fileName.toLowerCase().endsWith('.tada.md')) {
+        _addMessageToHistory("Invalid file. Please select a '.tada.md' file.", false);
+        return;
+      }
+      File file = File(result.files.single.path!);
+      try {
+        String initialPromptContent = await file.readAsString();
+        _sendMessageToLLM(initialPromptContent, isInitialPrompt: true);
+      } catch (e) {
+        _addMessageToHistory("Error reading file: ${e.toString()}", false);
+      }
+    } else {
+      _addMessageToHistory("No file selected or file path is null.", false);
+    }
+  }
+
+  void _parseResponseForImage(String responseText) {
+    // Example parsing: look for [IMAGE: path/to/image.png]
+    // This is a placeholder. You'll need a robust parsing strategy.
+    final RegExp imageRegExp = RegExp(r"\[IMAGE:\s*([^\]]+)\s*\]");
+    final match = imageRegExp.firstMatch(responseText);
+    if (match != null) {
+      final imagePath = match.group(1);
+      if (imagePath != null && imagePath.isNotEmpty) {
+        // Assuming imagePath is a local file path for now.
+        // If it's a bundled asset, you'd use that. If URL, Image.network.
+        File imageFile = File(imagePath);
+        if (imageFile.existsSync()) { // Basic check
+          setState(() {
+            _currentImage = imageFile;
+          });
+        } else {
+            _addMessageToHistory("Image not found: $imagePath", false);
+        }
+      }
+    }
+  }
+
+  void _sendMessageToLLM(String text, {bool isInitialPrompt = false}) async {
+    if (_chat == null) {
+      _addMessageToHistory("Chat session not started. Load API key and select file.", false);
+      return;
+    }
+
+    if (!isInitialPrompt) {
+      _addMessageToHistory(text, true); // User's input
+    }
+    _inputController.clear();
+
+    try {
+      final response = await _chat!.sendMessage(Content.text(text));
+      final llmResponseText = response.text;
+      if (llmResponseText != null) {
+        _addMessageToHistory(llmResponseText, false); // LLM's response
+        _parseResponseForImage(llmResponseText); // Check for image commands
+      } else {
+        _addMessageToHistory("LLM sent an empty response.", false);
+      }
+    } catch (e) {
+      _addMessageToHistory("Error communicating with LLM: ${e.toString()}", false);
+    }
+
+    _scrollToBottom();
+  }
+
+  void _addMessageToHistory(String text, bool isUserMessage) {
+    if (!mounted) return;
+    setState(() {
+      _chatHistory.add(ChatMessage(text: text, isUserMessage: isUserMessage));
+    });
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  Widget _buildInputBar() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _inputController,
+              decoration: const InputDecoration(
+                hintText: 'Enter your command...',
+                border: OutlineInputBorder(),
+              ),
+              onSubmitted: (text) {
+                if (text.isNotEmpty) {
+                  _sendMessageToLLM(text);
+                }
+              },
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.send),
+            onPressed: () {
+              if (_inputController.text.isNotEmpty) {
+                _sendMessageToLLM(_inputController.text);
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
 
-  Future<void> _loadInitialPrompt() async {
-    if (_apiKey == null || _apiKey!.isEmpty) return;
-    try {
-      final String prompt = await rootBundle.loadString(_initialPromptPath);
-      _addMessage("Starting session with initial prompt...", "system");
-      await _sendMessageToLLM(prompt, isInitialPrompt: true);
-    } catch (e) {
-      _addMessage("Error loading initial prompt: $e", "system");
-    }
+  Widget _buildChatMessagesList() {
+    return ListView.builder(
+      controller: _scrollController, // Controller for messages list
+      itemCount: _chatHistory.length,
+      itemBuilder: (context, index) {
+        final message = _chatHistory[index];
+        return message.build(context);
+      },
+    );
   }
 
-  void _addMessage(String text, String sender, {String? imageUrl}) {
-    setState(() {
-      _messages.add({"sender": sender, "text": text, "imageUrl": imageUrl ?? ""});
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
-        }
-      });
-      if (sender == "llm" && imageUrl != null && imageUrl.isNotEmpty) {
-        _imageUrl = imageUrl;
-      }
-    });
-  }
-
-  Future<void> _handleSubmitted(String text) async {
-    if (text.isEmpty || _isLoading) return;
-    _textController.clear();
-    _addMessage(text, "user");
-    await _sendMessageToLLM(text);
-  }
-
-  Future<void> _sendMessageToLLM(String text, {bool isInitialPrompt = false}) async {
-    if (_apiKey == null || _apiKey!.isEmpty) {
-      _addMessage("API Key is missing. Cannot send message.", "system");
-      await _promptForApiKey();
-      if (_apiKey == null || _apiKey!.isEmpty) return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    final Uri geminiApiUrl = Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$_apiKey');
-
-    final requestBody = jsonEncode({
-      "contents": [
-        {
-          "parts": [
-            {"text": text}
-          ]
-        }
-      ],
-    });
-
-    try {
-      final response = await http.post(
-        geminiApiUrl,
-        headers: {'Content-Type': 'application/json'},
-        body: requestBody,
-      );
-
-      if (response.statusCode == 200) {
-        final responseBody = jsonDecode(response.body);
-        String llmResponseText = "Error: Could not parse LLM response.";
-        if (responseBody['candidates'] != null &&
-            responseBody['candidates'].isNotEmpty &&
-            responseBody['candidates'][0]['content'] != null &&
-            responseBody['candidates'][0]['content']['parts'] != null &&
-            responseBody['candidates'][0]['content']['parts'].isNotEmpty) {
-          llmResponseText = responseBody['candidates'][0]['content']['parts'][0]['text'];
-        } else if (responseBody['promptFeedback'] != null &&
-            responseBody['promptFeedback']['blockReason'] != null) {
-          llmResponseText = "Blocked: ${responseBody['promptFeedback']['blockReason']}";
-          if (responseBody['promptFeedback']['safetyRatings'] != null) {
-            llmResponseText += "\nDetails: ${responseBody['promptFeedback']['safetyRatings']}";
-          }
-        }
-        _addMessage(llmResponseText, "llm");
-      } else {
-        String errorBody = response.body;
-        try {
-          final decodedError = jsonDecode(response.body);
-          if (decodedError['error'] != null && decodedError['error']['message'] != null) {
-            errorBody = decodedError['error']['message'];
-          }
-        } catch (_) {}
-        _addMessage("Error from LLM: ${response.statusCode}\n$errorBody", "system");
-      }
-    } catch (e) {
-      _addMessage("Error sending message: $e", "system");
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Widget _buildImageDisplay(BuildContext context, Orientation orientation) {
-    if (_imageUrl == null) {
-      return const SizedBox.shrink();
-    }
-
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-
-    Widget imageWidget = Center(
+  Widget _buildImageDisplayWidget() {
+    if (_currentImage == null) return const SizedBox.shrink();
+    return Center(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Image.network(
-          _imageUrl!,
+        padding: const EdgeInsets.all(8.0), // Add some padding around the image
+        child: Image.file(
+          _currentImage!,
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 50),
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                    : null,
-              ),
-            );
-          },
         ),
       ),
     );
-
-    if (orientation == Orientation.landscape) {
-      return SizedBox(
-        width: screenWidth / 2,
-        child: imageWidget,
-      );
-    } else {
-      return SizedBox(
-        height: screenHeight / 3,
-        width: screenWidth,
-        child: imageWidget,
-      );
-    }
   }
 
   @override
@@ -254,88 +285,100 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: const Text('OpenTADA'),
         actions: [
-          if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: SizedBox(
-                  width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
-            ),
+          IconButton(
+            icon: const Icon(Icons.folder_open),
+            onPressed: _pickAndProcessTadaFile,
+            tooltip: 'Open .tada.md File',
+          ),
+          IconButton(
+            icon: const Icon(Icons.vpn_key),
+            onPressed: () async {
+              final newKey = await _promptForApiKey();
+              if (newKey != null && newKey.isNotEmpty) {
+                setState(() {
+                  _apiKey = newKey;
+                  _model = GenerativeModel(model: 'gemini-pro', apiKey: _apiKey!);
+                  _chat = _model!.startChat();
+                  _chatHistory.clear();
+                  _currentImage = null; // Reset image
+                  _addMessageToHistory("API Key updated. Please select a .tada.md file.", false);
+                });
+              }
+            },
+            tooltip: 'Update API Key',
+          )
         ],
       ),
-      body: OrientationBuilder(
-        builder: (context, orientation) {
-          Widget imageDisplay = _buildImageDisplay(context, orientation);
-          Widget chatArea = Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(8.0),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                bool isUser = message['sender'] == 'user';
-                bool isSystem = message['sender'] == 'system';
-                return Align(
-                  alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      color: isUser ? Colors.blueAccent : (isSystem ? Colors.grey[700] : Colors.grey[800]),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Text(
-                      message['text']!,
-                      style: TextStyle(color: isSystem ? Colors.yellowAccent : Colors.white),
-                    ),
-                  ),
-                );
-              },
-            ),
-          );
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final mediaQuery = MediaQuery.of(context);
+          final screenWidth = mediaQuery.size.width;
+          final orientation = mediaQuery.orientation;
+          final bool isSmallScreen = screenWidth < phoneScreenWidthThreshold;
 
-          Widget inputBar = Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: <Widget>[
+          if (isSmallScreen && orientation == Orientation.portrait) {
+            // Small phone, portrait: Image scrolls with chat content
+            return Column(
+              children: [
                 Expanded(
-                  child: TextField(
-                    controller: _textController,
-                    decoration: const InputDecoration(
-                      hintText: "Enter your command...",
-                      border: OutlineInputBorder(),
-                    ),
-                    onSubmitted: _isLoading ? null : _handleSubmitted,
-                    enabled: !_isLoading,
+                  child: ListView.builder(
+                    controller: _scrollController, // Controller for combined list
+                    itemCount: _chatHistory.length + (_currentImage != null ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (_currentImage != null) {
+                        if (index == 0) { // Image at the top of the scrollable list
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                              child: ConstrainedBox( // Constrain image height on small screens
+                                constraints: BoxConstraints(maxHeight: screenWidth * 0.75),
+                                child: Image.file(_currentImage!, fit: BoxFit.contain),
+                              ),
+                            ),
+                          );
+                        }
+                        // Adjust index for chat history
+                        final message = _chatHistory[index - 1];
+                        return message.build(context);
+                      } else {
+                        // No image, just chat history
+                        final message = _chatHistory[index];
+                        return message.build(context);
+                      }
+                    },
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: _isLoading ? null : () => _handleSubmitted(_textController.text),
-                ),
+                _buildInputBar(),
               ],
-            ),
-          );
-
-          if (orientation == Orientation.landscape && _imageUrl != null) {
-            return Row(
-              children: <Widget>[
-                imageDisplay,
+            );
+          } else if (orientation == Orientation.landscape) {
+            // Any device in landscape: Image on the side
+            return Column(
+              children: [
                 Expanded(
-                  child: Column(
-                    children: <Widget>[
-                      chatArea,
-                      inputBar,
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: constraints.maxWidth / 2,
+                        child: _buildImageDisplayWidget(),
+                      ),
+                      Expanded(child: _buildChatMessagesList()),
                     ],
                   ),
                 ),
+                _buildInputBar(),
               ],
             );
           } else {
+            // Larger screen (tablet/desktop) in portrait: Image at the top
             return Column(
-              children: <Widget>[
-                if (_imageUrl != null) imageDisplay,
-                chatArea,
-                inputBar,
+              children: [
+                SizedBox(
+                  height: constraints.maxHeight / 2,
+                  child: _buildImageDisplayWidget(),
+                ),
+                Expanded(child: _buildChatMessagesList()),
+                _buildInputBar(),
               ],
             );
           }
@@ -343,11 +386,35 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
     );
   }
+}
 
-  @override
-  void dispose() {
-    _textController.dispose();
-    _scrollController.dispose();
-    super.dispose();
+class ChatMessage {
+  final String text;
+  final bool isUserMessage;
+
+  ChatMessage({required this.text, required this.isUserMessage});
+
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: isUserMessage ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+        padding: const EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          color: isUserMessage
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.secondaryContainer,
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isUserMessage
+                ? Theme.of(context).colorScheme.onPrimary
+                : Theme.of(context).colorScheme.onSecondaryContainer,
+          ),
+        ),
+      ),
+    );
   }
 }
