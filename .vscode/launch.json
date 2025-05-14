@@ -2,15 +2,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Uno Mac",
-            "type": "coreclr",
+            "name": "Flutter (lib/main.dart)",
             "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/bin/Debug/net8.0/OpenTADA.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "internalConsole"
+            "type": "dart",
+            "program": "lib/main.dart", // Points to your main Dart file
+            "flutterMode": "debug" // Can be "debug", "profile", or "release"
         }
     ]
 }

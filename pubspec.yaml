@@ -1,0 +1,29 @@
+name: opentada_flutter
+description: "An Interactive Fiction engine built with Flutter."
+publish_to: 'none' # Remove this line if you intend to publish to pub.dev
+
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0' # Ensure this matches your Flutter SDK version
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0 # Or ^3.0.0 depending on your Flutter version
+
+flutter:
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  # assets:
+  #   - assets/images/
+  # Example:
+  # assets:
+  #   - assets/images/splash_screen.png
+  #   - assets/images/chapter1_image1.png

@@ -1,2 +1,9 @@
 bin/
 obj/
+.idea/
+macos/
+.dart_tool/
+.packages
+pubspec.lock
+.flutter-plugins
+.flutter-plugins-dependencies

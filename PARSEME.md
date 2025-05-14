@@ -32,6 +32,7 @@ When an LLM is compiling a FEW file, it must do the following:
 - Note whether a "generated files" list exists. If so, check whether the files already exist. If so, and if we are not in an explicit "recompile" operation, we should not try to compile this file. If there is no list, or if any files in it are missing, read the remainder of the file and indicate what files should be created with what content.
 - If we should (re)compile:
   - Read the remainder of the file. Based on the descriptions, Mermaid diagrams, etc. in the file, recommend files that should be created and offer them to the user as code blocks that they can copy or insert into their project.
+  - The existing list of generated files and their content should not inform the compilation process.
   - Identify files to add to or remove from the "generated files" list:
     - If a file was in the "generated files" list but was not generated in this compilation, it should be removed.
     - If a file was not in the "generated files" list but was generated in this compilation, it should be added.
