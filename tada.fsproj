@@ -1,10 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework> <UseWPF>true</UseWPF> <RootNamespace>Tada</RootNamespace>
-    <AssemblyName>Tada</AssemblyName>
-    <EnableDefaultItems>false</EnableDefaultItems> </PropertyGroup>
+    <OutputType>Exe</OutputType> <TargetFramework>net8.0</TargetFramework> <RootNamespace>tada</RootNamespace>
+    <AssemblyName>OpenTADA</AssemblyName>
+    <StartupObject>tada.Program</StartupObject> </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="Program.fs" />
