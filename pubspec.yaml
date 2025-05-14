@@ -1,29 +1,26 @@
 name: opentada_flutter
-description: "An Interactive Fiction engine built with Flutter."
-publish_to: 'none' # Remove this line if you intend to publish to pub.dev
+description: An Interactive Fiction engine.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.1.0+1
+version: 1.0.0+1
 
 environment:
-  sdk: '>=3.2.0 <4.0.0' # Ensure this matches your Flutter SDK version
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
+  http: ^1.1.0 # For making HTTP requests to Gemini API
+  flutter_secure_storage: ^9.0.0 # For storing API key securely
+  # shared_preferences: ^2.2.2 # Alternative for local storage if secure_storage is not desired for some reason
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0 # Or ^3.0.0 depending on your Flutter version
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true
-
-  # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - assets/images/
-  # Example:
-  # assets:
-  #   - assets/images/splash_screen.png
-  #   - assets/images/chapter1_image1.png
+  assets:
+    - books/The Beloved Dead Chapter 0.tada

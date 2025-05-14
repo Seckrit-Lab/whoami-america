@@ -36,5 +36,5 @@ When an LLM is compiling a FEW file, it must do the following:
   - Identify files to add to or remove from the "generated files" list:
     - If a file was in the "generated files" list but was not generated in this compilation, it should be removed.
     - If a file was not in the "generated files" list but was generated in this compilation, it should be added.
-  - Indicate to the user which file(s) should be added or removed. Provide an updated copy of the .few file source code for them to update the existing file.
+  - Indicate to the user which file(s) should be added or removed. If any need to be added or removed, then provide an updated copy of the .few file source code for them to update the existing file.
   - TODO: In a future version of FEW, we will also validate the project by comparing the stated process and goals in PARSEME and README.
