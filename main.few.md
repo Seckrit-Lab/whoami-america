@@ -7,6 +7,8 @@
 
 ## Project Format
 An Interactive Fiction engine that works cross-platform on Windows, MacOS, iOS, and Android; preferably, also Web. Google Gemini recommended Uno Platform as a very likely candidate (https://g.co/gemini/share/e58036eb022a). (Flutter was arguably the top recommendation but the original author has a personal preference for .Net and a long-standing familial fondness for the game of Uno; it tracks back through my grandfather the engineer and I find it satisfying to include it in one of my greatest inventive efforts.) 
+
+Some externals/extensions that may be required in order for this compilation to work include the .Net SDK, gtk+3 (brew install gtk+3), and the VS Code C# Dev Tools Extension.
 ## Core Components
 
 ## Implementation Details

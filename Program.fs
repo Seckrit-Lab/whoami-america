@@ -190,24 +190,31 @@ module App =
 
         mainGrid // Return the root UI element
 
-    // This would be your main application class, typically inheriting from Application in Uno.
-    // For F#, specific Uno templates provide the correct structure (e.g., using App.xaml.fs).
-    // The following is a placeholder for where the UI creation would be invoked.
-    type MainWindow() = // Or App()
-        inherit Application() // Or appropriate Uno base class
+    type MainWindow() =
+        inherit Application()
 
-        // In a real Uno app, OnLaunched is often where the initial UI is set up.
-        // override this.OnLaunched(args: LaunchActivatedEventArgs) =
-        //    let rootFrame = Window.Current.Content :?> Frame
-        //    if rootFrame = null then
-        //        Window.Current.Content <- createUI() // Or navigate to a page containing this UI
-        //    Window.Current.Activate()
+        override this.OnLaunched(args) =
+            let window = Windows.UI.Xaml.Window.Current
+            if isNull window.Content then
+                // Create a Frame to act as the navigation context
+                let rootFrame = new Frame()
+                
+                // Place the frame in the current Window
+                window.Content <- rootFrame
+                
+                // Set the UI content
+                rootFrame.Content <- createUI()
+            
+            window.Activate()
 
-    // Entry point (might be different in Uno F# templates)
     [<EntryPoint>]
     let main args =
+        // Initialize the Uno Platform host
+        let host = Uno.UI.Runtime.Skia.SkiaHost()
+        host.Initialize()
+        
         Application.Start(fun _ -> 
-            let _ = new MainWindow() // Or your App class
+            let app = new MainWindow()
             ()
         )
         0
