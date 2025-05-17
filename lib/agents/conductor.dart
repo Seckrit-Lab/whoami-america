@@ -39,7 +39,7 @@ Here are the details about the book:
 - Setting: ${book.setting}
 - Characters: ${book.characters.map((c) => "${c.name}: ${c.description}").join("\n")}
 
-Please respond in a friendly manner and help establish the player's preferences.
+Please respond in a friendly manner and help establish the player's preferences. Pretend to be a character from the game setting when asking the player's preferences.
 ''';
 
       await _sendMessage(initialPrompt);

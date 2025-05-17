@@ -57,8 +57,8 @@ class _OpenTadaHomeState extends State<OpenTadaHome> {
   Future<void> _loadApiKeysAndPrepare() async {
     bool keysAvailable = await _ensureApiKeysAvailable();
     if (keysAvailable) {
-      _log("API keys loaded. Ready to open a .tada.md file.");
-      _addMessageToHistory("Welcome to OpenTADA! Please select a .tada.md file to begin, or use the settings icon to update API keys.", false);
+      _log("API keys loaded. Ready to open a .tada.json file.");
+      _addMessageToHistory("Welcome to OpenTADA! Please select a .tada.json file to begin, or use the settings icon to update API keys.", false);
     } else {
       _log("One or both API keys not found or not provided. Please configure API keys using the settings icon.");
       _addMessageToHistory("Please configure your Gemini and ChatGPT API keys using the settings (key) icon in the AppBar to begin.", false);
@@ -268,7 +268,7 @@ class _OpenTadaHomeState extends State<OpenTadaHome> {
   }
 
   Future<void> _pickAndProcessTadaFile() async {
-    _log("Attempting to pick .tada.md file.");
+    _log("Attempting to pick .tada.json file.");
     if (_geminiApiKey.isEmpty || _chatGptApiKey.isEmpty) {
       final message = "Gemini or ChatGPT API key not configured. Please use the settings (key) icon in the AppBar to set them.";
       _log(message);
@@ -281,7 +281,7 @@ class _OpenTadaHomeState extends State<OpenTadaHome> {
 
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['md'],
+      allowedExtensions: ['json'],
     );
 
     if (result != null && result.files.single.path != null) {
@@ -289,8 +289,8 @@ class _OpenTadaHomeState extends State<OpenTadaHome> {
       final filePath = result.files.single.path!;
       _log("File picked: $fileName");
 
-      if (!fileName.toLowerCase().endsWith('.tada.md')) {
-        final message = "Invalid file: '$fileName'. Please select a '.tada.md' file.";
+      if (!fileName.toLowerCase().endsWith('.tada.json')) {
+        final message = "Invalid file: '$fileName'. Please select a '.tada.json' file.";
         _log(message);
         _addMessageToHistory(message, false);
         return;
@@ -451,7 +451,7 @@ class _OpenTadaHomeState extends State<OpenTadaHome> {
       return Center(
         child: ElevatedButton(
           onPressed: _pickAndProcessTadaFile,
-          child: const Text('Open .tada.md File'),
+          child: const Text('Open .tada.json File'),
         ),
       );
     }
@@ -572,7 +572,7 @@ class _OpenTadaHomeState extends State<OpenTadaHome> {
         actions: [
           IconButton(
             icon: const Icon(Icons.folder_open),
-            tooltip: 'Open .tada.md File',
+            tooltip: 'Open .tada.json File',
             onPressed: (_geminiApiKey.isNotEmpty && _chatGptApiKey.isNotEmpty) 
                        ? _pickAndProcessTadaFile
                        : () {

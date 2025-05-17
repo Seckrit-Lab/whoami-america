@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'dart:convert'; // Import for jsonDecode
 import 'models/book.dart';
 import 'agents/director.dart';
 import 'agents/conductor.dart';
@@ -49,7 +50,17 @@ class PlaySession with ChangeNotifier {
       }
       
       final content = await file.readAsString();
-      final parsedBook = Book.fromMarkdown(content, filePath);
+      // Parse the string content as JSON
+      final Map<String, dynamic> jsonMap;
+      try {
+        jsonMap = jsonDecode(content) as Map<String, dynamic>;
+      } catch (e) {
+        _currentText = 'Failed to parse book file as JSON: $e';
+        _setLoading(false);
+        return false;
+      }
+      
+      final parsedBook = Book.fromJson(jsonMap, filePath);
       
       if (parsedBook == null) {
         _currentText = 'Failed to parse book file. Please check the format.';

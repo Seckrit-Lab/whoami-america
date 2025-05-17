@@ -22,7 +22,7 @@ The Director, Conductor, and Scribe use the gemini-2.gemini-2.0-flash model. The
 Any time a message is sent to, or a response received from, any of these agents or the player, it will be logged to the application log in the format "[Agent Name or 'Player'] to [Agent name or 'Player']: [Message]"
 
 ## Book Format
-A Tada book is a Markdown file with the extension .tada.md. Examples can be found in the books file of this repo. The format is as follows:
+A Tada book is a JSON file with the extension .tada.json. Examples can be found in the books file of this repo. The format is as follows:
 - A headline at the start of the file gives the title of the book.
 - A Characters section with a list of characters, giving names and descriptions of both appearance and personality.
 - A Setting, describing the overall scenario. Detailed location descriptions are not necessary and should go into Locations. This encompasses a broader description of the situation, e.g. for The Grapes of Wrath, this might indicate "The 'Dustbowl' of early twentieth century America, viewed through the eyes of a family traveling in a desperate search for work."

@@ -10,7 +10,7 @@ Admiral Ruth Gainsborough: A decorated veteran of the US Navy, working the proje
 
 Dr. Ray Thomas: A brilliant and eccentric engineer 
 
-Bill Gambler: A friend and former colleague of Joseph. Bill is a computer programmer and hacker who has spent time in prison and in mental hospitals. He has a moderate view of Large Language Models as a tool to facilitate human communication and connection in an unprecedented way. When Joseph calls him, his words may help to bring the two together — either by wisely counseling them to resolve their differences, or by being so strange that their differences seem trivial in comparison. 
+Bill Gambler: Bill is a computer programmer and hacker who has spent time in prison and in mental hospitals. He is a consultant on the Damocles project. He has a moderate view of Large Language Models as a tool to facilitate human communication and connection in an unprecedented way.
 
 Outcomes: 
 - The game is over when the player has learned of the nature of Project Damocles.

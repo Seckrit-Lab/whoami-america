@@ -28,10 +28,10 @@ class Artist {
       final request = CreateImageRequest(
         prompt: enhancedPrompt,
         n: 1, // Number of images to generate
-        //size: CreateImageRequestSize.s1024x1024, // Or other supported sizes like s1792x1024 or s1024x1792 for DALL-E 3
-        //responseFormat: CreateImageRequestResponseFormat.b64Json, // Or url
-        model: CreateImageRequestModel.model(ImageModels.dallE3), // Explicitly use DALL-E 3
-        // quality: CreateImageRequestQuality.hd, // Optional: for DALL-E 3, can be 'standard' or 'hd'
+        size: ImageSize.v1792x1024, // Or other supported sizes like s1792x1024 or s1024x1792 for DALL-E 3
+        responseFormat: ImageResponseFormat.b64Json, // Or url
+        model: CreateImageRequestModel.model(ImageModels.dallE3) // Explicitly use DALL-E 3
+//        quality: CreateImageRequestQuality.hd, // Optional: for DALL-E 3, can be 'standard' or 'hd'
         // style: CreateImageRequestStyle.vivid, // Optional: for DALL-E 3, can be 'vivid' or 'natural'
       );
 

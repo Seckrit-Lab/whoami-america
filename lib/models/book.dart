@@ -6,6 +6,7 @@ class Book {
   final List<Character> characters;
   final String setting;
   final List<Outcome> outcomes;
+  final List<Scene> scenes;
   final String filePath;
 
   Book({
@@ -13,69 +14,38 @@ class Book {
     required this.characters,
     required this.setting,
     required this.outcomes,
+    required this.scenes,
     required this.filePath,
   });
 
-  /// Parse a book from markdown content
-  static Book? fromMarkdown(String markdown, String filePath) {
+  /// Parse a book from a JSON map
+  static Book? fromJson(Map<String, dynamic> json, String filePath) {
     try {
-      String title = '';
-      List<Character> characters = [];
-      String setting = '';
-      List<Outcome> outcomes = [];
-      
-      // Extract title (first headline)
-      final titleRegex = RegExp(r'^# (.+)$', multiLine: true);
-      final titleMatch = titleRegex.firstMatch(markdown);
-      if (titleMatch != null) {
-        title = titleMatch.group(1)!.trim();
-      }
-      
-      // Extract characters section
-      final charactersRegex = RegExp(r'## Characters\s+([\s\S]*?)(?=^##|\Z)', multiLine: true);
-      final charactersMatch = charactersRegex.firstMatch(markdown);
-      if (charactersMatch != null) {
-        final charactersList = charactersMatch.group(1)!.trim();
-        // Parse character entries (assuming list format)
-        final characterEntries = RegExp(r'- ([^:]+):([\s\S]*?)(?=^-|\Z)', multiLine: true)
-            .allMatches(charactersList);
-        
-        for (final entry in characterEntries) {
-          final name = entry.group(1)?.trim() ?? '';
-          final description = entry.group(2)?.trim() ?? '';
-          characters.add(Character(name: name, description: description));
-        }
-      }
-      
-      // Extract setting
-      final settingRegex = RegExp(r'## Setting\s+([\s\S]*?)(?=^##|\Z)', multiLine: true);
-      final settingMatch = settingRegex.firstMatch(markdown);
-      if (settingMatch != null) {
-        setting = settingMatch.group(1)!.trim();
-      }
-      
-      // Extract outcomes
-      final outcomesRegex = RegExp(r'## Outcomes\s+([\s\S]*?)(?=^##|\Z)', multiLine: true);
-      final outcomesMatch = outcomesRegex.firstMatch(markdown);
-      if (outcomesMatch != null) {
-        final outcomesList = outcomesMatch.group(1)!.trim();
-        // Parse outcome entries
-        final outcomeEntries = RegExp(r'- (.+)', multiLine: true).allMatches(outcomesList);
-        for (final entry in outcomeEntries) {
-          final description = entry.group(1)?.trim() ?? '';
-          outcomes.add(Outcome(description: description));
-        }
-      }
-      
+      final title = json['title'] as String? ?? '';
+      final charactersList = json['characters'] as List<dynamic>? ?? [];
+      final characters = charactersList
+          .map((charJson) => Character.fromJson(charJson as Map<String, dynamic>))
+          .toList();
+      final setting = json['setting'] as String? ?? '';
+      final outcomesList = json['outcomes'] as List<dynamic>? ?? [];
+      final outcomes = outcomesList
+          .map((outcomeJson) => Outcome.fromJson(outcomeJson as Map<String, dynamic>))
+          .toList();
+      final scenesList = json['scenes'] as List<dynamic>? ?? [];
+      final scenes = scenesList
+          .map((sceneJson) => Scene.fromJson(sceneJson as Map<String, dynamic>))
+          .toList();
+
       return Book(
         title: title,
         characters: characters,
         setting: setting,
         outcomes: outcomes,
+        scenes: scenes,
         filePath: filePath,
       );
     } catch (e) {
-      debugPrint('Error parsing book: $e');
+      debugPrint('Error parsing book from JSON: $e');
       return null;
     }
   }
@@ -86,6 +56,13 @@ class Character {
   final String description;
 
   Character({required this.name, required this.description});
+
+  factory Character.fromJson(Map<String, dynamic> json) {
+    return Character(
+      name: json['name'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+    );
+  }
 }
 
 class Outcome {
@@ -93,4 +70,25 @@ class Outcome {
   final bool isSuccess;
 
   Outcome({required this.description, this.isSuccess = true});
+
+  factory Outcome.fromJson(Map<String, dynamic> json) {
+    return Outcome(
+      description: json['description'] as String? ?? '',
+      isSuccess: json['isSuccess'] as bool? ?? true,
+    );
+  }
+}
+
+class Scene {
+  final int id;
+  final String content;
+
+  Scene({required this.id, required this.content});
+
+  factory Scene.fromJson(Map<String, dynamic> json) {
+    return Scene(
+      id: json['id'] as int? ?? 0,
+      content: json['content'] as String? ?? '',
+    );
+  }
 }
