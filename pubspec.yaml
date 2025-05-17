@@ -1,20 +1,23 @@
-name: tada
-description: An Interactive Fiction engine.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+name: opentada_flutter
+description: "OpenTADA - Text Adventure Development Architecture"
+publish_to: 'none'
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.2.0 <4.0.0' # Ensure compatibility with latest Flutter features
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  google_generative_ai: ^0.4.0 # Use a recent version for Gemini API
-  file_picker: ^6.1.1 # For file selection
-  shared_preferences: ^2.2.2 # For local key-value storage
-  path_provider: ^2.1.1 # For accessing standard paths
-  # cupertino_icons: ^1.0.2 # Included by default, but good to be aware of
+  cupertino_icons: ^1.0.2
+  google_generative_ai: ^0.3.0  # Updated from ^0.2.0
+  file_picker: ^6.1.1
+  shared_preferences: ^2.2.2
+  path_provider: ^2.1.1
+  markdown_widget: ^2.3.0
+  flutter_markdown: ^0.6.18
+  openai_dart: ^0.4.5 # Replace with the actual latest version
 
 dev_dependencies:
   flutter_test:

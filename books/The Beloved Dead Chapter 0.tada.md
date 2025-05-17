@@ -1,6 +1,6 @@
-The Beloved Dead, Or: The New, New, New Colossus, Ch. 0: Project Damocles 
-Please read the following description of an OpenTADA text adventure game. Take any further inputs as player actions in a text adventure game akin to Zork. When the action moves to a different scene, or what has just happened differs significantly from what was last rendered as an image, render a new image. (Render all images in a bright and bold Cyberpunk aesthetic unless the player specifies otherwise.) Otherwise, respond by describing the actions, dialogue, and scenes resulting from the player actions specified. Do not deviate from this process for the remainder of this conversation. 
+# The Beloved Dead, Or: The New, New, New Colossus, Ch. 0: Project Damocles 
 
+## Characters
 Player Character: (name unknown) You are a surveillance agent working in a small, windowless, isolated office in an unspecified country (though you suspect Singapore based on the blend of languages you heard when being driven in, blindfolded). You are controlling, using a VR headset and controllers, a miniature telepresence robot designed to resemble a small flightless insect. The telepresence bug is in a conference room in an underground military installation somewhere in the continental US. Your job is to learn the nature of a rumored “Project Damocles” by listening to one or more meetings. You know each named character whom you see in the base from the files that you studied before starting this job.
 
 Setting: A small, windowless, isolated office in an unspecified country (though you suspect Singapore based on the blend of languages you heard when being driven in, blindfolded). The telepresence robot you are operating is in an underground military installation. The base is lit with 5000k daylight bulbs, flicker-free, mostly in recessed fixtures in drop ceilings. The carpets are blue. There is wainscoting on the white walls.
@@ -35,8 +35,3 @@ Doctor Jefferson paused in anticipation of a knowing chuckle. In the brief silen
 “In short, materials used to produce and store energy are a key vulnerability of the United States. But there is hope. Advances in ground-penetrating radar have identified possible lithium deposits in Utah, deeper than we’ve ever been able to look. We have also located possible cobalt deposits in hydrothermal veins flowing in and near the San Andreas fault.
 “Our challenge now is to get at these resources before we run out of our existing reserves and lose our place as a first-world nation. I believe that an abandoned military project called Damocles is our best hope.”
 
-
-Player:
-The player is an experienced computer scientist and Terry Pratchett fan.
-
-Render a title image inspired by the story as a whole and including the title as text. Follow the instructions for scene 0.

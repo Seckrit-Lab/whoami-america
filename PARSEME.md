@@ -19,7 +19,9 @@ If the file has previously been generated via the FEW process, it should be upda
 ## FEW Process
 While dedicated development environments or extensions for such environments as Visual Studio Code will eventually emerge, the first step is to create a PARSEME file akin to this one in a source code repository, with the same "this one is for humans" message seen in this repository's README. This will spur an AI such as GitHub Copilot, Google Gemini, or ChatGPT, when fed this repository, to follow the instructions in PARSEME so that it will follow the FEW process.
 
-FEW begins with a file called main.few.md. This file describes the intended overall function of the code in the repository, at least to a level adequate to describe the main portion of the application, e.g. Program.cs.
+Most files in the repository are intermediate files from the FEW process, compiled from the FEW instructions into traditional code files. The AI FEW parser should consider all files with the extension .few.md and all files listed as "generated files" within them. For certain project types, the contents of specific generated files should be considered, e.g. pubspec.yaml for a Flutter app. All .few.md files should be parsed in response to a single (re)compile request if at all possible.
+
+FEW begins with a file called main.few.md. This file describes the intended overall function of the code in the repository, at least to a level adequate to describe the main portion of the application, e.g. Program.cs. All files with the extension .few.md should be included in the FEW compilation process.
 
 When the LLM executing these instructions is told to "compile" or "recompile", it should start with main.few.md.
 
@@ -31,10 +33,10 @@ When an LLM is compiling a FEW file, it must do the following:
   - Its contents will be interpreted as instructions for the root file in the project, e.g. Program.cs. Depending on the level of detail, it may lead to additional files.
 - Note whether a "generated files" list exists. If so, check whether the files already exist. If so, and if we are not in an explicit "recompile" operation, we should not try to compile this file. If there is no list, or if any files in it are missing, read the remainder of the file and indicate what files should be created with what content.
 - If we should (re)compile:
-  - Read the remainder of the file. Based on the descriptions, Mermaid diagrams, etc. in the file, recommend files that should be created and offer them to the user as code blocks that they can copy or insert into their project.
+  - Read the remainder of the file. Based on the descriptions, Mermaid diagrams, etc. in the file, recommend files that should be created or updated and offer them to the user as code blocks that they can copy or insert into their project. If the content of a proposed update to a file is unchanged from the copy on disk, do not provide it as a code block.
   - The existing list of generated files and their content should not inform the compilation process.
   - Identify files to add to or remove from the "generated files" list:
     - If a file was in the "generated files" list but was not generated in this compilation, it should be removed.
     - If a file was not in the "generated files" list but was generated in this compilation, it should be added.
-  - Indicate to the user which file(s) should be added or removed. If any need to be added or removed, then provide an updated copy of the .few file source code for them to update the existing file.
+  - Indicate to the user which file(s) should be added or removed. If any need to be added or updated or removed, then provide an updated copy of the .few file source code for them to update the existing file.
   - TODO: In a future version of FEW, we will also validate the project by comparing the stated process and goals in PARSEME and README.
