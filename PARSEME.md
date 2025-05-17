@@ -40,3 +40,10 @@ When an LLM is compiling a FEW file, it must do the following:
     - If a file was not in the "generated files" list but was generated in this compilation, it should be added.
   - Indicate to the user which file(s) should be added or removed. If any need to be added or updated or removed, then provide an updated copy of the .few file source code for them to update the existing file.
   - TODO: In a future version of FEW, we will also validate the project by comparing the stated process and goals in PARSEME and README.
+
+  # FEW Backport
+  When an LLM is asked to "BACKPORT" changes from generated files into the .few.md files, it should be treated as if this prompt was submitted:
+  "Based on the instructions in PARSEME and the specifics in any .few.md files, what generated files show changes indicating that the .few.md files need to be updated to reflect an updated design? Please suggest updated versions of these files.'
+
+# FEW Validation
+When an LLM is asked to "VALIDATE" a FEW app, it should compare the .few.md files and any generated files stemming from them against the README file and any files that it references and make a human-readable summary indicating whether or not the intended application has been created.
