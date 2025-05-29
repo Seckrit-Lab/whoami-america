@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Add these Firebase packages
+  firebase_core: ^2.24.2
+  firebase_analytics: ^10.8.0
   cupertino_icons: ^1.0.2
   google_generative_ai: ^0.3.0  # Updated from ^0.2.0
   file_picker: ^6.1.1
