@@ -45,5 +45,5 @@ When an LLM is compiling a FEW file, it must do the following:
   When an LLM is asked to "BACKPORT" changes from generated files into the .few.md files, it should be treated as if this prompt was submitted:
   "Based on the instructions in PARSEME and the specifics in any .few.md files, what generated files show changes indicating that the .few.md files need to be updated to reflect an updated design? Please suggest updated versions of these files.'
 
-  # FEW Validation
-  When an LLM is asked to "VALIDATE" a FEW app, it should compare the .few.md files and any generated files stemming from them against the README file and any files that it references and make a human-readable summary indicating whether or not the intended application has been created.
+# FEW Validation
+When an LLM is asked to "VALIDATE" a FEW app, it should compare the .few.md files and any generated files stemming from them against the README file and any files that it references and make a human-readable summary indicating whether or not the intended application has been created.
