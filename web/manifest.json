@@ -1,6 +1,6 @@
 {
-    "name": "opentada_flutter",
-    "short_name": "opentada_flutter",
+    "name": "tada_game",
+    "short_name": "tada_game",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

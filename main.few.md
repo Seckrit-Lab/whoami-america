@@ -1,9 +1,5 @@
-``` few ```
-# OpenTADA - Main
+# The Good Ship Metaphor
 
-## Generated Files
-- lib/main.dart: Main application entry point and UI implementation for Flutter
-- pubspec.yaml: Flutter project definition, dependencies, and assets file
 
 ## Project Format
 An Interactive Fiction engine that works cross-platform on Windows, MacOS, iOS, and Android; preferably, also Web. Flutter is the chosen platform based on a recommendation from Google Gemini (https://g.co/gemini/share/e58036eb022a).
@@ -29,3 +25,13 @@ For the initial implementation, this application uses the Google Gemini API for 
 Once the necessary API keys have been found/provided, the user will be prompted to select a file with the extension .tada.json from their local storage, e.g., via the "open file"/Finder interface on MacOS. The contents of that file will be used to begin the game according to the "open book" section of play.few.md. If, at any time, an API returns a message indicating that a limit has been exceeded or an authentication error occurs, the user will be prompted to provide a new API key for the affected service.
 
 The user's input will be provided to the appropriate LLM via the agent system, and the LLM's responses (text and images) will be shown in the main application window.
+
+## Generated Files:
+- pubspec.yaml: Flutter project configuration file
+- lib/main.dart: Main Flutter application file
+- lib/models/story.dart: Data model for the story
+- lib/services/gemini_api.dart: Service for interacting with Gemini API
+- lib/services/openai_api.dart: Service for interacting with OpenAI API
+- lib/ui/widgets/image_display.dart: Widget to display images
+- lib/ui/widgets/text_input.dart: Widget for text input
+- lib/ui/widgets/story_display.dart: Widget to display the story text

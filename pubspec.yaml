@@ -1,6 +1,6 @@
-name: opentada_flutter
-description: "OpenTADA - Text Adventure Development Architecture"
-publish_to: 'none'
+name: the_tada
+description: A text adventure game where you learn about yourself.
+publish_to: 'none' # Remove this line if you intend to publish to pub.dev
 
 version: 1.0.0+1
 
@@ -10,17 +10,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  # Add these Firebase packages
-  firebase_core: ^2.24.2
-  firebase_analytics: ^10.8.0
   cupertino_icons: ^1.0.2
-  google_generative_ai: ^0.3.0  # Updated from ^0.2.0
-  file_picker: ^6.1.1
-  shared_preferences: ^2.2.2
+  http: ^1.1.0 # For API calls
+  file_picker: ^6.0.0 # For .tada.json file selection
+  shared_preferences: ^2.2.0 # For storing API keys
+  dart_openai: ^5.1.0  # Check for the latest version
+  pdf: ^3.10.4
+  printing: ^5.11.0
   path_provider: ^2.1.1
-  markdown_widget: ^2.3.0
-  flutter_markdown: ^0.6.18
-  openai_dart: ^0.4.5 # Replace with the actual latest version
 
 dev_dependencies:
   flutter_test:
@@ -29,3 +26,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/books/Welcome to the Neybahood.tada.md
