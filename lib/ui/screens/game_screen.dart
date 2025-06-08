@@ -10,7 +10,6 @@ import 'package:path_provider/path_provider.dart';
 
 // Import other created files
 import '../../models/story.dart';
-import '../../services/gemini_api.dart';
 import '../../services/openai_api.dart';
 import '../widgets/story_display.dart';
 import '../widgets/text_input.dart';
@@ -43,7 +42,6 @@ class _GameScreenState extends State<GameScreen> {
   SharedPreferences? _prefsInstance;
   late final String _storyTitle;
 
-  late GeminiService _geminiService;
   late OpenAIService _openAIService;
 
   bool _isLoadingState = true;
@@ -60,8 +58,7 @@ class _GameScreenState extends State<GameScreen> {
   Future<void> _initializeApp() async {
     _prefsInstance = await SharedPreferences.getInstance();
     await _ensureApiKeys();
-    if (geminiApiKey != null && openaiApiKey != null) {
-      _geminiService = GeminiService(apiKey: geminiApiKey!);
+    if (openaiApiKey != null) {
       _openAIService = OpenAIService(apiKey: openaiApiKey!);
       // Load the built-in game data
       await _loadBuiltInGameData();
@@ -132,15 +129,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Future<void> _ensureApiKeys() async {
-    geminiApiKey = _prefsInstance!.getString('gemini_api_key');
     openaiApiKey = _prefsInstance!.getString('openai_api_key');
-    if (geminiApiKey == null || geminiApiKey!.isEmpty) {
-      _addAppLog('Gemini API Key not found. Prompting user.');
-      if (mounted) {
-        geminiApiKey = await _promptForKey(context, 'Gemini', 'gemini_api_key');
-      }
-    }
-
     if (openaiApiKey == null || openaiApiKey!.isEmpty) {
       _addAppLog('OpenAI API Key not found. Prompting user.');
       if (mounted) {
@@ -148,7 +137,7 @@ class _GameScreenState extends State<GameScreen> {
       }
     }
 
-    if (geminiApiKey == null || openaiApiKey == null) {
+    if (openaiApiKey == null) {
         _addAppLog('Essential API keys are missing. Application might not function correctly.');
     }
   }
@@ -204,15 +193,13 @@ class _GameScreenState extends State<GameScreen> {
     _addAppLog('Initializing game from .tada.md content.');
     try {
       // Create the initial prompt for the LLM
-      const String initialPrompt = "The following is the script for an interactive fiction game. "
-          "Prompt the player to describe themselves and their literary preferences and customize responses based on it. "
-          "E.g. if they mention a fondness for Terry Pratchett, add wordplay; if they enjoy Steinbeck, keep the prose terse and somber.";
+      const String initialPrompt = "The following is the script for an interactive fiction game. ";
     
       // Combine the instruction with the Markdown content
       final String combinedPrompt = "$initialPrompt\n\n$tadaMarkdownContent";
     
-      // Store this as the first context for the Gemini service
-      _geminiService.setInitialContext(combinedPrompt);
+      // Store this as the first context for the OpenAI service
+      _openAIService.setInitialContext(combinedPrompt);
     
       // Add initial greeting to the story log
       if(mounted) {
@@ -243,9 +230,9 @@ class _GameScreenState extends State<GameScreen> {
     _inputController.clear();
 
     try {
-      _addAppLog('Sending to Gemini: $input');
-      String storyResponse = await _geminiService.getResponse(input, storyLogToString());
-      _addAppLog('Received from Gemini: $storyResponse');
+      _addAppLog('Sending to OpenAI: $input');
+      String storyResponse = await _openAIService.getResponse(input, storyLogToString());
+      _addAppLog('Received from OpenAI: $storyResponse');
       
       // Clean the response before displaying it to the user
       String displayText = storyResponse;
@@ -310,16 +297,12 @@ class _GameScreenState extends State<GameScreen> {
         }
         if (e.isAuthError || e.isLimitError) {
             _addAppLog('Attempting to re-authenticate for ${e.serviceName}');
-            if (e.serviceName.toLowerCase().contains('gemini')) {
-                await _prefsInstance!.remove('gemini_api_key');
-                geminiApiKey = null;
-            } else if (e.serviceName.toLowerCase().contains('openai')) {
+            if (e.serviceName.toLowerCase().contains('openai')) {
                 await _prefsInstance!.remove('openai_api_key');
                 openaiApiKey = null;
             }
             await _ensureApiKeys(); 
-            if ((e.serviceName.toLowerCase().contains('gemini') && geminiApiKey != null && _prefsInstance!.getString('gemini_api_key') != null) ||
-                (e.serviceName.toLowerCase().contains('openai') && openaiApiKey != null && _prefsInstance!.getString('openai_api_key') != null) ) {
+            if ((e.serviceName.toLowerCase().contains('openai') && openaiApiKey != null && _prefsInstance!.getString('openai_api_key') != null) ) {
                  _addAppLog('New API key provided for ${e.serviceName}. Please try your command again.');
                  if(mounted) {
                    setState(() {
@@ -558,7 +541,7 @@ class _GameScreenState extends State<GameScreen> {
         body: Center(child: CircularProgressIndicator()),
       );
     }
-    if (geminiApiKey == null || openaiApiKey == null) {
+    if (openaiApiKey == null) {
          return Scaffold(
             appBar: AppBar(title: const Text('Tada - API Key Error')),
             body: Center(

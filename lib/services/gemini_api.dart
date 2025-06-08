@@ -28,7 +28,7 @@ class GeminiService {
         {
           "role": "user",
           "parts": [
-            {"text": "You are a text adventure game engine. Continue the story based on the history and the latest user input. Provide context for image generation if a new scene is described, by ending your response with a line like 'GENERATE IMAGE: [detailed prompt for image]' or 'NEW SCENE IMAGE: [prompt]'. Keep responses concise and engaging."},
+            {"text": "You are a text adventure game engine. Continue the story based on the history and the latest user input. Provide context for image generation if a new scene is described, by ending your response with a line like 'GENERATE IMAGE: [detailed prompt for image]'. When providing image generation context, mention explicit details of the appearance of characters included, if known. Do not over-emphasize appearance in the main text."},
           ]
         },
         {
