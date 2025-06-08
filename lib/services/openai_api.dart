@@ -74,10 +74,10 @@ class OpenAIService {
     );
     try {
       final response = await OpenAI.instance.chat.create(
-        model: 'gpt-4', // or 'gpt-3.5-turbo' depending on requirements
+        model: 'gpt-3.5-turbo', // or 'gpt-3.5-turbo' depending on requirements
         messages: messages,
         temperature: 0.7,
-        maxTokens: 300, // Adjust as needed
+        maxTokens: 900, // Adjust as needed
       );
 
       if (response.choices.isNotEmpty) {
