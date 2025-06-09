@@ -437,7 +437,7 @@ class _GameScreenState extends State<GameScreen> {
     
     // Add each story element to the PDF
     for (var element in storyLog) {
-      if (element is TextElement) {
+      if (element is TextElement || element is UserInputElement) {
         // Add text elements
         content.add(
           pw.Padding(
@@ -487,7 +487,7 @@ class _GameScreenState extends State<GameScreen> {
           pw.MultiPage(
             pageFormat: format,
             margin: const pw.EdgeInsets.all(32),
-            header: (context) => pw.Text('$_storyTitle - Story', 
+            header: (context) => pw.Text(_storyTitle, 
                 style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
             footer: (context) => pw.Container(
               alignment: pw.Alignment.centerRight,
