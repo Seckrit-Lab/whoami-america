@@ -5,9 +5,9 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'ui/screens/game_screen.dart';
 
 // Global variables (kept in main for app-wide access)
-String title = 'Welcome to the Neybahood';
-String playerPrompt = "Hello, and welcome to the Neybahood! Please tell me a bit about yourself, so that you can have a happy time in the neybahood that's just for you.";
-String bookPath = 'assets/books/Welcome to the Neybahood.tada.md';
+String title = 'Who Am I: America';
+String playerPrompt = "Hello, and welcome to Who Am I: America. I am your Neighbor, and America is the neighborhood that we share. Would you please tell me a little about yourself? I can make sure to introduce you to friends and neighbors from across this beautiful land. You can learn about them -- maybe even a little about yourself, too.";
+String bookPath = 'assets/books/Who Am I America.tada.md';
 String? geminiApiKey;
 String? openaiApiKey;
 late String bookContent;

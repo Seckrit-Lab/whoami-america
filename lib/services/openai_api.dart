@@ -17,7 +17,7 @@ class OpenAIService {
     try {
       final response = await OpenAI.instance.image.create(
         prompt: prompt,
-        model: 'dall-e-3',
+        model: 'dall-e-2',
         responseFormat: OpenAIImageResponseFormat.b64Json,
       );
 
@@ -74,7 +74,7 @@ class OpenAIService {
     );
     try {
       final response = await OpenAI.instance.chat.create(
-        model: 'gpt-3.5-turbo', // or 'gpt-3.5-turbo' depending on requirements
+        model: 'gpt-4.1-mini', // or 'gpt-3.5-turbo' depending on requirements
         messages: messages,
         temperature: 0.7,
         maxTokens: 900, // Adjust as needed

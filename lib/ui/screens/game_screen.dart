@@ -251,7 +251,7 @@ class _GameScreenState extends State<GameScreen> {
       }
 
       if (storyResponse.toLowerCase().contains("generate image:") || storyResponse.toLowerCase().contains("new scene image:")) { 
-        String imagePrompt = storyResponse.substring(storyResponse.toLowerCase().indexOf("image:") + 6).trim();
+        String imagePrompt = "Pastel drawing depicting   ${storyResponse.substring(storyResponse.toLowerCase().indexOf("image:") + 6).trim()}";
         if (imagePrompt.isEmpty) imagePrompt = "Sci-fi scene: ${storyLog.lastWhere((e) => e is TextElement, orElse: () => TextElement('')).text}";
         
         _addAppLog('Requesting image from OpenAI for prompt: $imagePrompt');
