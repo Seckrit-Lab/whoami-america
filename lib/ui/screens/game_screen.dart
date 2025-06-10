@@ -22,12 +22,14 @@ class GameScreen extends StatefulWidget {
   final String title;
   final String bookContent;
   final String playerPrompt;
+  final String? initialPrompt;
   final List<String> artStyles;
 
   const GameScreen({
     required this.title,
     required this.bookContent,
     required this.playerPrompt,
+    this.initialPrompt,
     super.key, required List<String> this.artStyles
   });
 
@@ -194,10 +196,10 @@ class _GameScreenState extends State<GameScreen> {
     _addAppLog('Initializing game from .tada.md content.');
     try {
       // Create the initial prompt for the LLM
-      const String initialPrompt = "The following is the script for an interactive fiction game. ";
-    
+      const String defaultInitialPrompt = "The following is the script for an interactive fiction game. Address the player as if you are the omniscient narrator.";
+      final String prompt = widget.initialPrompt ?? defaultInitialPrompt;
       // Combine the instruction with the Markdown content
-      final String combinedPrompt = "$initialPrompt\n\n$tadaMarkdownContent";
+      final String combinedPrompt = "$prompt\n\n$tadaMarkdownContent";
     
       // Store this as the first context for the OpenAI service
       _openAIService.setInitialContext(combinedPrompt);

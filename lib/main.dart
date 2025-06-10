@@ -6,7 +6,7 @@ import 'ui/screens/game_screen.dart';
 
 // Global variables (kept in main for app-wide access)
 String title = 'Who Am I: America';
-String playerPrompt = "Hello, and welcome to Who Am I: America. I am your Neighbor, and America is the neighborhood that we share. Would you please tell me a little about yourself? I can make sure to introduce you to friends and neighbors from across this beautiful land. You can learn about them -- maybe even a little about yourself, too.";
+String playerPrompt = "You have just arrived in a beautiful neighborhood. A mysterious but warm stranger gives you a gentle smile and says, in a voice like sunshine: \"I am your neighbor, and America is the neighborhood that we share. Would you please tell me a little about yourself? I can make sure to introduce you to friends and neighbors from across this beautiful land. You can learn about them -- maybe even a little about yourself, too.\"";
 String bookPath = 'assets/books/Who Am I America.tada.md';
 String? geminiApiKey;
 String? openaiApiKey;
