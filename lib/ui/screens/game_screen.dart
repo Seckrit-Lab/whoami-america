@@ -376,64 +376,6 @@ class _GameScreenState extends State<GameScreen> {
       },
     );
   }
-
-  Future<void> _exportToPdf() async {
-    _addAppLog('Exporting story to PDF');
-    final pdf = pw.Document();
-    
-    // Create a PDF document
-    pdf.addPage(
-      pw.MultiPage(
-        pageFormat: PdfPageFormat.a4,
-        margin: const pw.EdgeInsets.all(32),
-        header: (context) => pw.Text('$_storyTitle - Story Export', 
-            style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
-        footer: (context) => pw.Container(
-          alignment: pw.Alignment.centerRight,
-          margin: const pw.EdgeInsets.only(top: 10),
-          child: pw.Text('Page ${context.pageNumber} of ${context.pagesCount}'),
-        ),
-        build: (context) => _buildPdfContent(),
-      ),
-    );
-    
-    try {
-      // Get temporary directory for saving the file
-      final output = await getTemporaryDirectory();
-      final file = File('${output.path}/story_export.pdf');
-      
-      // Save the PDF
-      await file.writeAsBytes(await pdf.save());
-      _addAppLog('PDF saved to: ${file.path}');
-      
-      if (mounted) {
-        // Show success message with option to open the file
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('PDF exported successfully'),
-            action: SnackBarAction(
-              label: 'Open',
-              onPressed: () async {
-                if (await file.exists()) {
-                  // Use system default viewer to open the PDF
-                  await Printing.layoutPdf(
-                    onLayout: (_) async => await file.readAsBytes(),
-                  );
-                }
-              },
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      _addAppLog('Error exporting PDF: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error exporting PDF: $e')),
-        );
-      }
-    }
-  }
   
   List<pw.Widget> _buildPdfContent() {
     List<pw.Widget> content = [];
