@@ -520,14 +520,7 @@ class _GameScreenState extends State<GameScreen> {
                   _printStory();
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.picture_as_pdf),
-                title: const Text('Export to PDF'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _exportToPdf();
-                },
-              ),
+              // PDF export option removed as it doesn't work properly
             ],
           ),
         );
@@ -633,7 +626,7 @@ class _GameScreenState extends State<GameScreen> {
           IconButton(
             icon: const Icon(Icons.ios_share),
             onPressed: _showExportOptions,
-            tooltip: 'Export Story',
+            tooltip: 'Print Story', // Updated from 'Export Story'
           ),
           IconButton(
             icon: const Icon(Icons.receipt_long),
