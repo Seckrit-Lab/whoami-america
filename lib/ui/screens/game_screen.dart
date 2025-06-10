@@ -22,12 +22,13 @@ class GameScreen extends StatefulWidget {
   final String title;
   final String bookContent;
   final String playerPrompt;
+  final List<String> artStyles;
 
   const GameScreen({
     required this.title,
     required this.bookContent,
     required this.playerPrompt,
-    super.key
+    super.key, required List<String> this.artStyles
   });
 
   @override
@@ -59,7 +60,7 @@ class _GameScreenState extends State<GameScreen> {
     _prefsInstance = await SharedPreferences.getInstance();
     await _ensureApiKeys();
     if (openaiApiKey != null) {
-      _openAIService = OpenAIService(apiKey: openaiApiKey!);
+      _openAIService = OpenAIService(apiKey: openaiApiKey!, artStyles: widget.artStyles);
       // Load the built-in game data
       await _loadBuiltInGameData();
     } else {
@@ -251,7 +252,7 @@ class _GameScreenState extends State<GameScreen> {
       }
 
       if (storyResponse.toLowerCase().contains("generate image:") || storyResponse.toLowerCase().contains("new scene image:")) { 
-        String imagePrompt = "Pastel drawing depicting   ${storyResponse.substring(storyResponse.toLowerCase().indexOf("image:") + 6).trim()}";
+        String imagePrompt = storyResponse.substring(storyResponse.toLowerCase().indexOf("image:") + 6).trim();
         if (imagePrompt.isEmpty) imagePrompt = "Sci-fi scene: ${storyLog.lastWhere((e) => e is TextElement, orElse: () => TextElement('')).text}";
         
         _addAppLog('Requesting image from OpenAI for prompt: $imagePrompt');
